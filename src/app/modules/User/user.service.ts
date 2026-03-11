@@ -297,7 +297,7 @@ export const getMeFromDB = async (email: string, role: string) => {
   }
 
   if (role === USER_ROLE.tutor) {
-    result = await Tutor.findOne({ user: userId });
+    result = await Tutor.findOne({ user: userId }).populate('user');
   }
 
   return { result };

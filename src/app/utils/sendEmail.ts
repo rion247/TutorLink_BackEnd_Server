@@ -7,8 +7,8 @@ const sendEmail = async (to: string, html: string) => {
     port: 587,
     secure: config.NODE_ENV === 'production',
     auth: {
-      user: 'vivianrionmarandi@gmail.com',
-      pass: 'zofr bgtr ikfv mcrc',
+      user: config.smtp_user_email as string,
+      pass: config.smtp_user_password as string,
     },
   });
   await transporter.sendMail({

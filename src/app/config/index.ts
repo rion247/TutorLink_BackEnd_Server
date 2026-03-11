@@ -22,4 +22,6 @@ export default {
   store_cancel_url: process.env.STORE_CANCEL_URL,
   store_ipn_url: process.env.STORE_IPN_URL,
   reset_password_ui_link: process.env.RESET_PASSWORD_UI_LINK,
+  smtp_user_email: process.env.SMTP_USER_EMAIL,
+  smtp_user_password: process.env.SMTP_USER_PASSWORD,
 };
