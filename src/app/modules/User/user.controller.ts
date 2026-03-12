@@ -23,7 +23,11 @@ const createStudent = catchAsync(async (req, res) => {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'Student registered successfully!!!',
-    data: { accessToken: result?.accessToken, data: result?.createNewStudent },
+    data: {
+      accessToken: result?.accessToken,
+      refreshToken: result?.refreshToken,
+      data: result?.createNewStudent,
+    },
   });
 });
 
@@ -46,7 +50,11 @@ const createAdmin = catchAsync(async (req, res) => {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'Admin registered successfully!!!',
-    data: { accessToken: result?.accessToken, data: result?.createNewAdmin },
+    data: {
+      accessToken: result?.accessToken,
+      refreshToken: result?.refreshToken,
+      data: result?.createNewAdmin,
+    },
   });
 });
 
@@ -69,7 +77,11 @@ const createTutor = catchAsync(async (req, res) => {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'Tutor registered successfully!!!',
-    data: { accessToken: result?.accessToken, data: result?.createNewTutor },
+    data: {
+      accessToken: result?.accessToken,
+      refreshToken: result?.refreshToken,
+      data: result?.createNewTutor,
+    },
   });
 });
 
