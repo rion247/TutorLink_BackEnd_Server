@@ -25,13 +25,13 @@ const subjectSchema = new Schema<TSubject, SubjectModel>(
   { timestamps: true },
 );
 
-subjectSchema.pre('find', function () {
-  this.find({ isActive: { $ne: false } });
-});
+// subjectSchema.pre('find', function () {
+//   this.find({ isActive: { $ne: false } });
+// });
 
-subjectSchema.pre('findOne', function () {
-  this.findOne({ isActive: { $ne: false } });
-});
+// subjectSchema.pre('findOne', function () {
+//   this.findOne({ isActive: { $ne: false } });
+// });
 
 subjectSchema.statics.isSubjectExist = async function (id: string) {
   const subjectInformation = await Subject.findById(id);

@@ -20,7 +20,19 @@ router.delete(
   TutorController.deleteTutor,
 );
 
+router.get(
+  '/all-tutor',
+  auth(USER_ROLE.admin),
+  TutorController.getAllTutorAdminQueryOnly,
+);
+
 router.get('/:id', TutorController.getSingleTutor);
+
+router.get(
+  '/all-tutor',
+  auth(USER_ROLE.admin),
+  TutorController.getAllTutorAdminQueryOnly,
+);
 
 router.get('/', TutorController.getAllTutor);
 

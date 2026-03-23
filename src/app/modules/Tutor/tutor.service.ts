@@ -8,8 +8,30 @@ import { Tutor } from './tutor.model';
 import mongoose from 'mongoose';
 import { TTutor } from './tutor.interface';
 
-const getAllTutorFromDB = async (query: Record<string, unknown>) => {
+const getAllTutorFromDBAdminQueryOnly = async (
+  query: Record<string, unknown>,
+) => {
   const tutorQuery = new QueryBuilder(Tutor.find().populate('user'), query)
+    .search(searchAbleFieldsArray)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await tutorQuery.modelQuery;
+  const meta = await tutorQuery.countTotal();
+
+  return { result, meta };
+};
+
+const getAllTutorFromDB = async (query: Record<string, unknown>) => {
+  const tutorQuery = new QueryBuilder(
+    Tutor.find({
+      isApproved: { $ne: false },
+      isDeleted: { $ne: true },
+    }).populate('user'),
+    query,
+  )
     .search(searchAbleFieldsArray)
     .filter()
     .sort()
@@ -127,6 +149,7 @@ const updateTutorInToDB = async (email: string, payload: Partial<TTutor>) => {
 };
 
 export const TutorService = {
+  getAllTutorFromDBAdminQueryOnly,
   getAllTutorFromDB,
   getSingleTutorFromDB,
   deleteTutorFromDB,

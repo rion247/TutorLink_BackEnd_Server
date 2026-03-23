@@ -40,7 +40,7 @@ const adminSchema = new Schema<TAdmin>(
       default: false,
     },
   },
-  { timestamps: true },
+  { timestamps: true, toJSON: { virtuals: true } },
 );
 
 adminSchema.virtual('fullName').get(function () {

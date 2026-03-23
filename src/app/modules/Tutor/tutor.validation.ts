@@ -36,7 +36,7 @@ const tutorValidationSchemaforCreate = z.object({
       bio: z
         .string('Tutor Bio must be a string')
         .min(10, 'Tutor Bio must be at least 10 characters long')
-        .max(100, 'Tutor bio must not exceed 50 characters!!!')
+        .max(100, 'Tutor bio must not exceed 100 characters!!!')
         .nonempty('Tutor Bio is required'),
       address: z
         .string('Tutor home address must be a string')

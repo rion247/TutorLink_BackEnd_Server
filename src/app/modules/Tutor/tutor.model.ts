@@ -77,27 +77,16 @@ const tutorSchema = new Schema<TTutor>(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
   },
 );
 
+tutorSchema.pre('findOne', function () {
+  this.findOne({ isApproved: { $ne: false } }, { isDeleted: { $ne: true } });
+});
+
 tutorSchema.virtual('fullName').get(function () {
   return `${this?.name?.firstName} ${this?.name?.lastName}`;
-});
-
-tutorSchema.pre('find', function () {
-  this.find({ isApproved: { $ne: false } });
-});
-
-tutorSchema.pre('findOne', function () {
-  this.findOne({ isApproved: { $ne: false } });
-});
-
-tutorSchema.pre('find', function () {
-  this.find({ isDeleted: { $ne: true } });
-});
-
-tutorSchema.pre('findOne', function () {
-  this.findOne({ isDeleted: { $ne: true } });
 });
 
 export const Tutor = mongoose.model<TTutor>('Tutor', tutorSchema);

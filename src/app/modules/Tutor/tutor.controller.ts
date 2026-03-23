@@ -3,8 +3,21 @@ import catchAsync from '../../utils/catchAsync';
 import { TutorService } from './tutor.service';
 import sendResponse from '../../utils/sendResponse';
 
+const getAllTutorAdminQueryOnly = catchAsync(async (req, res) => {
+  const query = req.query;
+  const result = await TutorService.getAllTutorFromDBAdminQueryOnly(query);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Tutors are retrived successfully!!!',
+    data: result?.result,
+  });
+});
+
 const getAllTutor = catchAsync(async (req, res) => {
   const query = req.query;
+
   const result = await TutorService.getAllTutorFromDB(query);
 
   sendResponse(res, {
@@ -59,4 +72,5 @@ export const TutorController = {
   getSingleTutor,
   updateTutor,
   deleteTutor,
+  getAllTutorAdminQueryOnly,
 };

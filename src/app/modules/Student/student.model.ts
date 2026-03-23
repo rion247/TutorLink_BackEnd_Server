@@ -49,7 +49,7 @@ const studentSchema = new Schema<TStudent>(
       default: false,
     },
   },
-  { timestamps: true },
+  { timestamps: true, toJSON: { virtuals: true } },
 );
 
 studentSchema.virtual('fullName').get(function () {
