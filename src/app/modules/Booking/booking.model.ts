@@ -18,10 +18,6 @@ const bookingSchema = new Schema<TBooking>(
       type: Schema.Types.ObjectId,
       required: [true, 'Offered Subject is required!!!'],
     },
-    slotId: {
-      type: Schema.Types.ObjectId,
-      required: [true, 'Slot ID is required!!!'],
-    },
     bookingStatus: {
       type: String,
       enum: {

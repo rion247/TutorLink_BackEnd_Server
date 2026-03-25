@@ -82,7 +82,7 @@ const tutorSchema = new Schema<TTutor>(
 );
 
 tutorSchema.pre('findOne', function () {
-  this.findOne({ isApproved: { $ne: false } }, { isDeleted: { $ne: true } });
+  this.findOne({ isApproved: { $ne: false }, isDeleted: { $ne: true } });
 });
 
 tutorSchema.virtual('fullName').get(function () {

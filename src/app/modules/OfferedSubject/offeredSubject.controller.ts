@@ -66,20 +66,19 @@ const deleteOfferedSubject = catchAsync(async (req, res) => {
 });
 
 const updateOfferedSubject = catchAsync(async (req, res) => {
-  const { id, slotId } = req.params;
+  const { id } = req.params;
   const { userEmail } = req.user;
 
   const result = await OfferedSubjectService.updateOfferedSubjectSlotDataInToDB(
-    userEmail,
     id as string,
+    userEmail,
     req.body,
-    slotId as string,
   );
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
-    message: 'Available slots updated successfully!!!',
+    message: 'Offered Subject updated successfully!!!',
     data: result,
   });
 });

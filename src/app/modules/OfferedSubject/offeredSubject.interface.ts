@@ -9,8 +9,9 @@ export type TDay =
   | 'Saturday'
   | 'Sunday';
 
-export interface TAvailability {
-  _id: Types.ObjectId;
+export interface TOfferedSubject {
+  tutor: Types.ObjectId;
+  subject: Types.ObjectId;
   day: TDay;
   startTime: string;
   endTime: string;
@@ -18,21 +19,19 @@ export interface TAvailability {
   pricePerHour: number;
   maxCapacity: number;
   currentlyBooked: number;
-}
-
-export interface TOfferedSubject {
-  tutor: Types.ObjectId;
-  subject: Types.ObjectId;
-  availableSlots: TAvailability[];
   isActive: boolean;
 }
 
-export interface TOldTimeScheduled {
-  oldStartTime: string;
-  oldEndTime: string;
+export interface TScheduled {
+  day: TDay;
+  startTime: string;
+  endTime: string;
 }
 
-export interface TNewTimeScheduled {
-  newStartTime: string;
-  newEndTime: string;
+export interface TOfferedSubjectForUpdate {
+  day: TDay;
+  startTime: string;
+  endTime: string;
+  pricePerHour?: number;
+  maxCapacity?: number;
 }

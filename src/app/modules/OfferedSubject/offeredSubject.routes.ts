@@ -16,19 +16,19 @@ router.post(
   OfferedSubjectController.createOfferedSubject,
 );
 
-router.delete(
-  '/:id',
-  auth(USER_ROLE.tutor),
-  OfferedSubjectController.deleteOfferedSubject,
-);
-
 router.patch(
-  '/:id/update-available-slot/:slotId',
+  '/:id',
   auth(USER_ROLE.tutor),
   validateRequest(
     offeredSubjectValidationSchemas.availabilityValidationSchemaforUpdate,
   ),
   OfferedSubjectController.updateOfferedSubject,
+);
+
+router.delete(
+  '/:id',
+  auth(USER_ROLE.tutor),
+  OfferedSubjectController.deleteOfferedSubject,
 );
 
 router.get('/:id', OfferedSubjectController.getSingleOfferedSubject);

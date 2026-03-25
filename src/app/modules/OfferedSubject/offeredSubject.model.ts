@@ -1,9 +1,19 @@
 import mongoose, { Schema } from 'mongoose';
-import { TAvailability, TOfferedSubject } from './offeredSubject.interface';
 import { dayArray } from './offeredSubject.constant';
+import { TOfferedSubject } from './offeredSubject.interface';
 
-const availabilitySchema = new Schema<TAvailability>(
+const offeredSubjectSchema = new Schema<TOfferedSubject>(
   {
+    tutor: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'Tutor ID is required!!!'],
+      ref: 'Tutor',
+    },
+    subject: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'Subject ID is required!!!'],
+      ref: 'Subject',
+    },
     day: {
       type: String,
       enum: {
@@ -25,6 +35,7 @@ const availabilitySchema = new Schema<TAvailability>(
     duration: {
       type: Number,
       required: [true, 'Session duration is required!!!'],
+      default: 0,
     },
     pricePerHour: {
       type: Number,
@@ -40,30 +51,13 @@ const availabilitySchema = new Schema<TAvailability>(
       required: [true, 'Current Booked number is required!!!'],
       default: 0,
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true },
 );
-
-const offeredSubjectSchema = new Schema<TOfferedSubject>({
-  tutor: {
-    type: Schema.Types.ObjectId,
-    required: [true, 'Tutor ID is required!!!'],
-    ref: 'Tutor',
-  },
-  subject: {
-    type: Schema.Types.ObjectId,
-    required: [true, 'Subject ID is required!!!'],
-    ref: 'Subject',
-  },
-  availableSlots: {
-    type: [availabilitySchema],
-    required: [true, 'Available Slots section is required!!!'],
-  },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
-});
 
 offeredSubjectSchema.pre('find', function () {
   this.find({ isActive: { $ne: false } });

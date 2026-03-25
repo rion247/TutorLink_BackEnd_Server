@@ -32,8 +32,16 @@ router.patch(
   SubjectController.updateStatusForSubject,
 );
 
-router.get('/:id', auth(USER_ROLE.admin), SubjectController.getSingleSubject);
+router.get(
+  '/:id',
+  auth(USER_ROLE.admin, USER_ROLE.tutor),
+  SubjectController.getSingleSubject,
+);
 
-router.get('/', auth(USER_ROLE.admin), SubjectController.getAllSubject);
+router.get(
+  '/',
+  auth(USER_ROLE.admin, USER_ROLE.tutor),
+  SubjectController.getAllSubject,
+);
 
 export const SubjectRoutes = router;

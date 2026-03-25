@@ -16,7 +16,7 @@ import { Tutor } from '../Tutor/tutor.model';
 import { USER_ROLE } from '../Auth/auth.constant';
 
 const createBookingInToDB = async (email: string, payload: TBooking) => {
-  const userData = await User.findOne({ email });
+  const userData = await User.findOne({ email }).select('_id');
 
   const studentData = await Student.findOne({ user: userData?._id });
 
@@ -54,6 +54,10 @@ const createBookingInToDB = async (email: string, payload: TBooking) => {
     );
   }
 
+  if (offeredSubjectData?.maxCapacity <= 0) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Sorry!!! Capacity is Full!!!');
+  }
+
   const subjectData = await Subject.findOne({
     _id: offeredSubjectData?.subject,
   });
@@ -69,24 +73,6 @@ const createBookingInToDB = async (email: string, payload: TBooking) => {
     throw new AppError(
       StatusCodes.BAD_REQUEST,
       'Sorry!!! This subject is inactive !!!',
-    );
-  }
-
-  const availableSlotsData = offeredSubjectData?.availableSlots.find(
-    (item) => item?._id.toString() === payload?.slotId.toString(),
-  );
-
-  if (!availableSlotsData) {
-    throw new AppError(
-      StatusCodes.NOT_FOUND,
-      'Sorry!!! Available Slots Data is not found!!!',
-    );
-  }
-
-  if (availableSlotsData?.maxCapacity <= availableSlotsData?.currentlyBooked) {
-    throw new AppError(
-      StatusCodes.BAD_REQUEST,
-      'Sorry!!! Available Slots is Full!!!',
     );
   }
 

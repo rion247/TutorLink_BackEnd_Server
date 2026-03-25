@@ -1,15 +1,15 @@
 import { StatusCodes } from 'http-status-codes';
-import { TAvailability, TOfferedSubject } from './offeredSubject.interface';
+import {
+  TOfferedSubject,
+  TOfferedSubjectForUpdate,
+} from './offeredSubject.interface';
 import { OfferedSubject } from './offeredSubject.model';
 import AppError from '../../errors/AppError';
 import { Subject } from '../Subject/subject.model';
-import {
-  comparisonWithNewDataAndExistingData,
-  selfComparisonWithNewData,
-} from './offeredCourse.utils';
 import { Tutor } from '../Tutor/tutor.model';
 import { User } from '../User/user.model';
 import QueryBuilder from './../../builder/QueryBuilder';
+import { calculateHour, hasTimeConflict } from './offeredSubject.utils';
 
 const createOfferedSubjectInToDB = async (
   tutorInfo: string,
@@ -17,9 +17,11 @@ const createOfferedSubjectInToDB = async (
 ) => {
   const subjectID = payload?.subject;
 
-  const userData = await User.findOne({ email: tutorInfo });
+  const userData = await User.findOne({ email: tutorInfo }).select('_id');
 
-  const tutorData = await Tutor.findOne({ user: userData?._id });
+  const tutorData = await Tutor.findOne({
+    user: userData?._id,
+  });
 
   if (!tutorData) {
     throw new AppError(
@@ -58,27 +60,33 @@ const createOfferedSubjectInToDB = async (
     );
   }
 
-  const offeredSubjectData = await OfferedSubject.findOne({
+  if (payload?.startTime > payload?.endTime) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Time conflict detected!!!');
+  }
+
+  const offeredSubjectData = await OfferedSubject.find({
     tutor: tutorData?._id,
-    subject: payload?.subject,
-  });
+    day: payload?.day,
+  }).select('day startTime endTime');
 
-  const existingTimeScheduled = offeredSubjectData?.availableSlots;
+  const newTimeScheduled = {
+    day: payload?.day,
+    startTime: payload?.startTime,
+    endTime: payload?.endTime,
+  };
 
-  const slots = payload?.availableSlots;
-
-  if (selfComparisonWithNewData(slots)) {
+  if (
+    offeredSubjectData &&
+    hasTimeConflict(offeredSubjectData, newTimeScheduled)
+  ) {
     throw new AppError(StatusCodes.BAD_REQUEST, `Time conflict detected!!!`);
   }
 
-  if (existingTimeScheduled && existingTimeScheduled.length > 0) {
-    if (comparisonWithNewDataAndExistingData(existingTimeScheduled, slots)) {
-      throw new AppError(StatusCodes.BAD_REQUEST, `Time conflict detected!!!`);
-    }
-  }
+  const duration = calculateHour(payload?.startTime, payload?.endTime);
 
   const offeredSubjectInfoForBackEnd = {
     ...payload,
+    duration,
     tutor: tutorData?._id,
   };
 
@@ -147,6 +155,13 @@ const deleteOfferedSubjectInToDB = async (email: string, id: string) => {
     );
   }
 
+  if (tutorData?._id?.toString() !== offeredSubjectData?.tutor?.toString()) {
+    throw new AppError(
+      StatusCodes.UNAUTHORIZED,
+      'Sorry!!! You are not authorized !!!',
+    );
+  }
+
   const deleteOfferedSubject = await OfferedSubject.findByIdAndUpdate(
     id,
     { isActive: false },
@@ -157,10 +172,9 @@ const deleteOfferedSubjectInToDB = async (email: string, id: string) => {
 };
 
 const updateOfferedSubjectSlotDataInToDB = async (
-  email: string,
   id: string,
-  payload: Partial<TAvailability>,
-  slotId: string,
+  email: string,
+  payload: TOfferedSubjectForUpdate,
 ) => {
   const userData = await User.isUserExist(email);
 
@@ -187,63 +201,75 @@ const updateOfferedSubjectSlotDataInToDB = async (
     );
   }
 
-  const offeredSubjectData = await OfferedSubject.findById(id);
+  const offeredSubjectDataWithTutorInformation = await OfferedSubject.find({
+    tutor: tutorData?._id,
+  }).select('day startTime endTime tutor duration');
 
-  if (!offeredSubjectData) {
+  const getUpdateRequestOfferedSubjectData =
+    offeredSubjectDataWithTutorInformation?.find(
+      (item) => item?._id?.toString() === id,
+    );
+
+  if (!getUpdateRequestOfferedSubjectData) {
     throw new AppError(
       StatusCodes.NOT_FOUND,
       'Sorry!!! This offered subject is not exist !!!',
     );
   }
 
-  if (!offeredSubjectData?.isActive) {
+  if (getUpdateRequestOfferedSubjectData?.isActive === false) {
     throw new AppError(
       StatusCodes.BAD_REQUEST,
       'Sorry!!! This offered subject is not active !!!',
     );
   }
 
-  if (offeredSubjectData?.tutor?.toString() !== tutorData?._id?.toString()) {
+  if (
+    getUpdateRequestOfferedSubjectData?.tutor?.toString() !==
+    tutorData?._id?.toString()
+  ) {
     throw new AppError(
       StatusCodes.UNAUTHORIZED,
       'Sorry!!! You are not authorized !!!',
     );
   }
 
-  const isSlotExisting = offeredSubjectData?.availableSlots?.find(
-    (slot) => slot?._id?.toString() === slotId?.toString(),
-  );
-
-  if (!isSlotExisting) {
-    throw new AppError(
-      StatusCodes.NOT_FOUND,
-      'Sorry!!! This slot is not exist !!!',
-    );
+  if (
+    payload?.startTime &&
+    payload?.endTime &&
+    payload?.startTime > payload?.endTime
+  ) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Time conflict detected!!!');
   }
 
-  const updatedSlot = {
-    ...isSlotExisting,
-    ...payload,
+  const newTimeScheduled = {
+    day: payload?.day,
+    startTime: payload?.startTime,
+    endTime: payload?.endTime,
   };
 
-  const otherSlots = offeredSubjectData.availableSlots.filter(
-    (s) => s._id.toString() !== slotId,
+  const forTimeConflictChecking = offeredSubjectDataWithTutorInformation.filter(
+    (item) => item._id !== getUpdateRequestOfferedSubjectData?._id,
   );
 
-  const newSlotArray = [updatedSlot];
-
   if (
-    comparisonWithNewDataAndExistingData(
-      otherSlots as TAvailability[],
-      newSlotArray as TAvailability[],
-    )
+    forTimeConflictChecking &&
+    hasTimeConflict(forTimeConflictChecking, newTimeScheduled)
   ) {
-    throw new AppError(StatusCodes.BAD_REQUEST, 'Time conflict detected');
+    throw new AppError(StatusCodes.BAD_REQUEST, `Time conflict detected!!!`);
   }
 
-  Object.assign(isSlotExisting, payload);
+  let duration = getUpdateRequestOfferedSubjectData?.duration;
 
-  const result = await offeredSubjectData.save();
+  if (payload?.startTime && payload?.endTime) {
+    duration = calculateHour(payload?.startTime, payload?.endTime);
+  }
+
+  const result = await OfferedSubject.findByIdAndUpdate(
+    getUpdateRequestOfferedSubjectData?._id,
+    { ...payload, duration },
+    { new: true, runValidators: true },
+  );
 
   return { result };
 };

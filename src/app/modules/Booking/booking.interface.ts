@@ -7,7 +7,6 @@ export interface TBooking {
   student: Types.ObjectId;
   tutor: Types.ObjectId;
   offeredSubject: Types.ObjectId;
-  slotId: Types.ObjectId;
   bookingStatus: TBookingStatus;
   paymentStatus: TPaymentStatus;
   transactionID: string;

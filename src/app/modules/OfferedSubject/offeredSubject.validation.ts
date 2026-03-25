@@ -1,28 +1,20 @@
 import z from 'zod';
 import { dayArray } from './offeredSubject.constant';
 
-const availabilityValidationSchema = z.object({
-  day: z.enum([...dayArray] as [string, ...string[]], 'Day is required'),
-  startTime: z
-    .string('Start Time must be a string')
-    .nonempty('Start Time is required'),
-  endTime: z
-    .string('End Time must be a string')
-    .nonempty('End Time is required'),
-  duration: z.number('Session duration is required'),
-  pricePerHour: z.number('Price Per Hour section is required'),
-  maxCapacity: z.number('Max Capacity is required'),
-});
-
 const offeredSubjectValidationSchemaforCreate = z.object({
   body: z.object({
     subject: z
       .string('Subject must be a string')
       .nonempty('Subject is required'),
-    availableSlots: z.array(
-      availabilityValidationSchema,
-      'Available Slots section is required',
-    ),
+    day: z.enum([...dayArray] as [string, ...string[]], 'Day is required'),
+    startTime: z
+      .string('Start Time must be a string')
+      .nonempty('Start Time is required'),
+    endTime: z
+      .string('End Time must be a string')
+      .nonempty('End Time is required'),
+    pricePerHour: z.number('Price Per Hour section is required'),
+    maxCapacity: z.number('Max Capacity is required'),
   }),
 });
 
@@ -40,7 +32,6 @@ const availabilityValidationSchemaforUpdate = z.object({
         .string('End Time must be a string')
         .nonempty('End Time is required')
         .optional(),
-      duration: z.number('Session duration is required').optional(),
       pricePerHour: z.number('Price Per Hour section is required').optional(),
       maxCapacity: z.number('Max Capacity is required').optional(),
     })
