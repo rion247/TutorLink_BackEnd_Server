@@ -5,6 +5,7 @@ type TPaymentStatus = 'paid' | 'unpaid';
 
 export interface TBooking {
   student: Types.ObjectId;
+  subject: Types.ObjectId;
   tutor: Types.ObjectId;
   offeredSubject: Types.ObjectId;
   bookingStatus: TBookingStatus;

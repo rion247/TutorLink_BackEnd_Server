@@ -9,6 +9,11 @@ const bookingSchema = new Schema<TBooking>(
       required: [true, 'Student ID is required!!!'],
       ref: 'Student',
     },
+    subject: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'Subject ID is required!!!'],
+      ref: 'Subject',
+    },
     tutor: {
       type: Schema.Types.ObjectId,
       required: [true, 'Tutor ID is required!!!'],
@@ -17,6 +22,7 @@ const bookingSchema = new Schema<TBooking>(
     offeredSubject: {
       type: Schema.Types.ObjectId,
       required: [true, 'Offered Subject is required!!!'],
+      ref: 'OfferedSubject',
     },
     bookingStatus: {
       type: String,

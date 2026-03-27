@@ -54,7 +54,7 @@ const createBookingInToDB = async (email: string, payload: TBooking) => {
     );
   }
 
-  if (offeredSubjectData?.maxCapacity <= 0) {
+  if (offeredSubjectData?.maxCapacity <= offeredSubjectData?.currentlyBooked) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'Sorry!!! Capacity is Full!!!');
   }
 
@@ -76,10 +76,35 @@ const createBookingInToDB = async (email: string, payload: TBooking) => {
     );
   }
 
+  const subjectId = subjectData?._id;
+
+  const tutorData = await Tutor.findById(offeredSubjectData?.tutor);
+
+  if (!tutorData) {
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      'Sorry!!! This tutor is not exist !!!',
+    );
+  }
+
+  if (!tutorData?.isApproved) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'Sorry!!! Tutor Approval Pending !!!',
+    );
+  }
+
+  if (tutorData?.isDeleted) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'Sorry!!! This Tutor is already deleted!!!',
+    );
+  }
+
   const alreadyBooked = await Booking.findOne({
     student: studentID,
     offeredSubject: payload?.offeredSubject,
-    slotId: payload?.slotId,
+    tutor: tutorData?._id,
   });
 
   if (alreadyBooked) {
@@ -92,7 +117,7 @@ const createBookingInToDB = async (email: string, payload: TBooking) => {
   const tran_id = new ObjectId().toString();
 
   const total_amount =
-    availableSlotsData?.pricePerHour * availableSlotsData?.duration;
+    offeredSubjectData?.pricePerHour * offeredSubjectData?.duration;
 
   const paymentInfo: TPaymentInformation = {
     tran_id,
@@ -106,6 +131,7 @@ const createBookingInToDB = async (email: string, payload: TBooking) => {
   const bookingInfoForBackEnd = {
     ...payload,
     student: studentID,
+    subject: subjectId,
     tutor: offeredSubjectData?.tutor,
     transactionID: tran_id,
     bookingStatus: 'pending',
@@ -146,9 +172,8 @@ const confirmPaymentInToDB = async (tran_id: string) => {
     await OfferedSubject.findOneAndUpdate(
       {
         _id: updateBookingDataForConfirmPayment?.offeredSubject,
-        'availableSlots._id': updateBookingDataForConfirmPayment?.slotId,
       },
-      { $inc: { 'availableSlots.$.currentlyBooked': 1 } },
+      { $inc: { currentlyBooked: 1 } },
       { new: true, runValidators: true, session },
     );
 
@@ -176,7 +201,7 @@ const paymentFailedInToDB = async (tran_id: string) => {
 
 const getAllBookingFromDB = async (query: Record<string, unknown>) => {
   const bookingQuery = new QueryBuilder(
-    Booking.find().populate('student offeredSubject tutor'),
+    Booking.find().populate('student offeredSubject tutor subject'),
     query,
   )
     .search(searchAbleField)
@@ -193,7 +218,7 @@ const getAllBookingFromDB = async (query: Record<string, unknown>) => {
 
 const getSingleBookingFromDB = async (id: string) => {
   const result = await Booking.findById(id).populate(
-    'student offeredSubject tutor',
+    'student offeredSubject tutor subject',
   );
 
   return { result };
@@ -224,7 +249,7 @@ const getMyBookingFromDB = async (email: string) => {
     const studentID = studentData?._id;
 
     result = await Booking.find({ student: studentID }).populate(
-      'student offeredSubject tutor',
+      'student offeredSubject tutor subject',
     );
   }
 
@@ -247,7 +272,7 @@ const getMyBookingFromDB = async (email: string) => {
 
     const tutorID = tutorData?._id;
     result = await Booking.find({ tutor: tutorID }).populate(
-      'student offeredSubject tutor',
+      'student offeredSubject tutor subject',
     );
   }
 
