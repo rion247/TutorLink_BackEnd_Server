@@ -3,6 +3,9 @@ import { dayArray } from './offeredSubject.constant';
 
 const offeredSubjectValidationSchemaforCreate = z.object({
   body: z.object({
+    offeredSubjectImage: z
+      .string('Offered Subject Image must be a string')
+      .optional(),
     subject: z
       .string('Subject must be a string')
       .nonempty('Subject is required'),
@@ -21,6 +24,9 @@ const offeredSubjectValidationSchemaforCreate = z.object({
 const availabilityValidationSchemaforUpdate = z.object({
   body: z
     .object({
+      offeredSubjectImage: z
+        .string('Offered Subject Image must be a string')
+        .optional(),
       day: z
         .enum([...dayArray] as [string, ...string[]], 'Day is required')
         .optional(),

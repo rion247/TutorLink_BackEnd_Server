@@ -7,6 +7,7 @@ const createOfferedSubject = catchAsync(async (req, res) => {
   const { userEmail } = req.user;
 
   const result = await OfferedSubjectService.createOfferedSubjectInToDB(
+    req.file,
     userEmail,
     req.body,
   );
@@ -72,6 +73,7 @@ const updateOfferedSubject = catchAsync(async (req, res) => {
   const result = await OfferedSubjectService.updateOfferedSubjectSlotDataInToDB(
     id as string,
     userEmail,
+    req.file,
     req.body,
   );
 

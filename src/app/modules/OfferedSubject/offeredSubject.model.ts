@@ -9,6 +9,10 @@ const offeredSubjectSchema = new Schema<TOfferedSubject>(
       required: [true, 'Tutor ID is required!!!'],
       ref: 'Tutor',
     },
+    offeredSubjectImage: {
+      type: String,
+      default: '',
+    },
     subject: {
       type: Schema.Types.ObjectId,
       required: [true, 'Subject ID is required!!!'],

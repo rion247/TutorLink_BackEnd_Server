@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { StatusCodes } from 'http-status-codes';
 import {
   TOfferedSubject,
@@ -10,8 +11,11 @@ import { Tutor } from '../Tutor/tutor.model';
 import { User } from '../User/user.model';
 import QueryBuilder from './../../builder/QueryBuilder';
 import { calculateHour, hasTimeConflict } from './offeredSubject.utils';
+import { ObjectId } from 'mongodb';
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 
 const createOfferedSubjectInToDB = async (
+  file: any,
   tutorInfo: string,
   payload: TOfferedSubject,
 ) => {
@@ -83,6 +87,15 @@ const createOfferedSubjectInToDB = async (
   }
 
   const duration = calculateHour(payload?.startTime, payload?.endTime);
+
+  if (file) {
+    const path = file?.path;
+
+    const imageName = new ObjectId().toString();
+
+    const { secure_url } = await sendImageToCloudinary(imageName, path);
+    payload.offeredSubjectImage = secure_url as string;
+  }
 
   const offeredSubjectInfoForBackEnd = {
     ...payload,
@@ -174,6 +187,7 @@ const deleteOfferedSubjectInToDB = async (email: string, id: string) => {
 const updateOfferedSubjectSlotDataInToDB = async (
   id: string,
   email: string,
+  file: any,
   payload: TOfferedSubjectForUpdate,
 ) => {
   const userData = await User.isUserExist(email);
@@ -263,6 +277,15 @@ const updateOfferedSubjectSlotDataInToDB = async (
 
   if (payload?.startTime && payload?.endTime) {
     duration = calculateHour(payload?.startTime, payload?.endTime);
+  }
+
+  if (file) {
+    const path = file?.path;
+
+    const imageName = new ObjectId().toString();
+
+    const { secure_url } = await sendImageToCloudinary(imageName, path);
+    payload.offeredSubjectImage = secure_url as string;
   }
 
   const result = await OfferedSubject.findByIdAndUpdate(

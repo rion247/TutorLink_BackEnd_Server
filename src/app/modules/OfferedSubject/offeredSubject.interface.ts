@@ -11,6 +11,7 @@ export type TDay =
 
 export interface TOfferedSubject {
   tutor: Types.ObjectId;
+  offeredSubjectImage?: string;
   subject: Types.ObjectId;
   day: TDay;
   startTime: string;
@@ -29,6 +30,7 @@ export interface TScheduled {
 }
 
 export interface TOfferedSubjectForUpdate {
+  offeredSubjectImage?: string;
   day: TDay;
   startTime: string;
   endTime: string;
