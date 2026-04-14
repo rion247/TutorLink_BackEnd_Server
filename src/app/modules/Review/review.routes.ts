@@ -24,6 +24,7 @@ router.patch(
 router.delete('/:id', auth(USER_ROLE.student), ReviewController.deleteReview);
 
 router.get('/:id', ReviewController.getSingleReview);
-router.get('/', ReviewController.getAllReview);
+
+router.get('/tutor-review/:tutorId', ReviewController.getAllReview);
 
 export const ReviewRoutes = router;

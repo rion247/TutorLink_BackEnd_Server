@@ -38,10 +38,6 @@ router.get(
   SubjectController.getSingleSubject,
 );
 
-router.get(
-  '/',
-  auth(USER_ROLE.admin, USER_ROLE.tutor),
-  SubjectController.getAllSubject,
-);
+router.get('/', SubjectController.getAllSubject);
 
 export const SubjectRoutes = router;

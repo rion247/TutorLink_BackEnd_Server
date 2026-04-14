@@ -28,12 +28,6 @@ router.get(
 
 router.get('/:id', TutorController.getSingleTutor);
 
-router.get(
-  '/all-tutor',
-  auth(USER_ROLE.admin),
-  TutorController.getAllTutorAdminQueryOnly,
-);
-
 router.get('/', TutorController.getAllTutor);
 
 export const TutorRoutes = router;

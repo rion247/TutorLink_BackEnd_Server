@@ -13,6 +13,7 @@ import QueryBuilder from './../../builder/QueryBuilder';
 import { calculateHour, hasTimeConflict } from './offeredSubject.utils';
 import { ObjectId } from 'mongodb';
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
+import { searchAbleFieldsArray } from './offeredSubject.constant';
 
 const createOfferedSubjectInToDB = async (
   file: any,
@@ -115,6 +116,7 @@ const getAllOfferedSubjectInToDB = async (query: Record<string, unknown>) => {
     OfferedSubject.find().populate('tutor subject'),
     query,
   )
+    .search(searchAbleFieldsArray)
     .filter()
     .sort()
     .paginate()

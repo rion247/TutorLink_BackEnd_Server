@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 import { NextFunction, Request, Response } from 'express';
 import { TUser_role } from '../modules/Auth/auth.interface';
 import catchAsync from '../utils/catchAsync';
@@ -24,7 +26,7 @@ const auth = (...requiredRoles: TUser_role[]) => {
         token,
         config.jwt_access_secret as string,
       ) as JwtPayload;
-    } catch {
+    } catch (err) {
       throw new AppError(
         StatusCodes.UNAUTHORIZED,
         'Sorry!!! You are not authorized!!!',

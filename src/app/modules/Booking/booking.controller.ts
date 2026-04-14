@@ -69,6 +69,21 @@ const getSingleBooking = catchAsync(async (req, res) => {
   });
 });
 
+const getSingleBookingwithTransactionId = catchAsync(async (req, res) => {
+  const { tran_id } = req.params;
+
+  const result = await BookingService.getSingleBookingwithTransactionIdFromDB(
+    tran_id as string,
+  );
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Booking is retrieved successfully!!!',
+    data: result?.result,
+  });
+});
+
 const getMyBooking = catchAsync(async (req, res) => {
   const { userEmail } = req.user;
 
@@ -107,4 +122,5 @@ export const BookingController = {
   getSingleBooking,
   getMyBooking,
   updateMyBookingDeliveredStatus,
+  getSingleBookingwithTransactionId,
 };

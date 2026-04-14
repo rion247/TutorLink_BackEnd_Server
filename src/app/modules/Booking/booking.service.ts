@@ -224,6 +224,14 @@ const getSingleBookingFromDB = async (id: string) => {
   return { result };
 };
 
+const getSingleBookingwithTransactionIdFromDB = async (id: string) => {
+  const result = await Booking.findOne({ transactionID: id }).populate(
+    'student offeredSubject tutor subject',
+  );
+
+  return { result };
+};
+
 const getMyBookingFromDB = async (email: string) => {
   const userData = await User.findOne({ email });
 
@@ -336,4 +344,5 @@ export const BookingService = {
   getSingleBookingFromDB,
   getMyBookingFromDB,
   updateMyBookingDeliveredStatusFromDB,
+  getSingleBookingwithTransactionIdFromDB,
 };

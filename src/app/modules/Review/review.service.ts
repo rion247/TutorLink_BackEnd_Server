@@ -50,9 +50,12 @@ const createReviewInToDB = async (email: string, payload: TReview) => {
   return { createReview };
 };
 
-const getAllReviewFromDB = async (query: Record<string, unknown>) => {
+const getAllReviewFromDB = async (
+  id: string,
+  query: Record<string, unknown>,
+) => {
   const reviewQuery = new QueryBuilder(
-    Review.find().populate('student tutor'),
+    Review.find({ tutor: id }).populate('student tutor'),
     query,
   )
     .search(searchAbleFieldsArray)

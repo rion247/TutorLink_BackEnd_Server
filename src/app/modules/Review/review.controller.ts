@@ -18,8 +18,12 @@ const createReview = catchAsync(async (req, res) => {
 
 const getAllReview = catchAsync(async (req, res) => {
   const query = req.query;
+  const { tutorId } = req.params;
 
-  const result = await ReviewService.getAllReviewFromDB(query);
+  const result = await ReviewService.getAllReviewFromDB(
+    tutorId as string,
+    query,
+  );
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

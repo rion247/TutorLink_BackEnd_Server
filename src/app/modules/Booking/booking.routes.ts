@@ -29,7 +29,17 @@ router.patch(
   BookingController.updateMyBookingDeliveredStatus,
 );
 
-router.get(`/:id`, auth(USER_ROLE.admin), BookingController.getSingleBooking);
+router.get(
+  `/:tran_id`,
+  auth(USER_ROLE.student),
+  BookingController.getSingleBookingwithTransactionId,
+);
+
+router.get(
+  `/:id`,
+  auth(USER_ROLE.admin, USER_ROLE.student),
+  BookingController.getSingleBooking,
+);
 router.get(`/`, auth(USER_ROLE.admin), BookingController.getAllBooking);
 
 export const BookingRoutes = router;

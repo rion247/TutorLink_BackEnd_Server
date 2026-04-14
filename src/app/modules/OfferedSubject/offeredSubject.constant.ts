@@ -7,3 +7,4 @@ export const dayArray = [
   'Saturday',
   'Sunday',
 ];
+export const searchAbleFieldsArray = ['subject.name', 'day'];
